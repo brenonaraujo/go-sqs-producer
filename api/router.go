@@ -23,7 +23,7 @@ func sendByQuantity(c *gin.Context) {
 		log.Fatal(err)
 	}
 	wg := SendParallel(qtdValue)
-	c.IndentedJSON(http.StatusAccepted, gin.H{"Message": "Parallel message send started"})
+	c.IndentedJSON(http.StatusOK, gin.H{"Message": "Parallel message send started"})
 	wg.Done()
 }
 
