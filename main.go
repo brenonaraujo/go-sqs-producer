@@ -9,12 +9,10 @@ import (
 )
 
 func main() {
-	log.Println("Starting the producer service")
+	log.Println("Starting the producer API")
 	awsConfig := GetAWSConfig()
 	queueName := aws.String("rawData-SQS")
 	message.SQSQueueSetup(awsConfig, queueName)
-	api.SetupRouter()
-	log.Println("Prometheus metrics started: http://localhost:2112/metrics")
+	api.SetupAPI()
 	log.Println("wating for messages to be sended!")
-	log.Println("Send Message finished")
 }

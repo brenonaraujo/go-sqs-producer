@@ -9,7 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func SetupRouter() {
+func SetupAPI() {
 	router := gin.Default()
 	router.GET("/send/:quantity", sendByQuantity)
 	router.GET("/metrics", prometheusHandler())
