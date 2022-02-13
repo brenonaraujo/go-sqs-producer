@@ -41,12 +41,12 @@ func main() {
 	}
 	var wg sync.WaitGroup
 
-	for i := 0; i < 2000; i++ {
+	for i := 0; i < 3000; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			message.SendMessage(message.SQSMessage{Body: updateMsg})
-			metrics.MsgSended.Inc()
+			metrics.MsgSendedTotal.Inc()
 		}()
 	}
 
@@ -55,4 +55,5 @@ func main() {
 	log.Println("Prometheus metrics started: http://localhost:2112/metrics")
 	log.Println("wating for messages to be sended!")
 	wg.Wait()
+	log.Println("Send Message finished")
 }
