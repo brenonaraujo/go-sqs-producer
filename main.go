@@ -2,14 +2,16 @@ package main
 
 import (
 	"brnnai/producer-sqs/message"
+	"brnnai/producer-sqs/metrics"
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/google/uuid"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func randFloat(min, max float64) float64 {
@@ -44,8 +46,13 @@ func main() {
 		go func() {
 			defer wg.Done()
 			message.SendMessage(message.SQSMessage{Body: updateMsg})
+			metrics.MsgSended.Inc()
 		}()
 	}
+
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(":2112", nil)
+	log.Println("Prometheus metrics started: http://localhost:2112/metrics")
+	log.Println("wating for messages to be sended!")
 	wg.Wait()
-	fmt.Println("finish")
 }
