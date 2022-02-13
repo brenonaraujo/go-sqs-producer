@@ -12,6 +12,7 @@ import (
 
 func SendMessage(msg SQSMessage) {
 	timer := prometheus.NewTimer(SendMessageDuration)
+	defer timer.ObserveDuration()
 	queue, queueErr := GetSqsQueue()
 	if queueErr != nil {
 		log.Fatal(queueErr)
@@ -29,7 +30,6 @@ func SendMessage(msg SQSMessage) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer timer.ObserveDuration()
 	MsgSendedTotal.Inc()
 }
 
