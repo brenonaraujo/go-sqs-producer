@@ -3,8 +3,6 @@ package message
 import (
 	"brnnai/producer-sqs/message/sqsApi"
 	"context"
-	"errors"
-	"fmt"
 	"log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -12,10 +10,11 @@ import (
 )
 
 func SendMessage(msg SQSMessage) {
-	queue, queueErr := getSqsQueue()
+	queue, queueErr := GetSqsQueue()
 	if queueErr != nil {
 		log.Fatal(queueErr)
 	}
+	log.Printf("Start to send message to queue: %v.\n", queue.QueueName)
 	bodyJson, bodyErr := msg.Body.MarshalJSON()
 	if bodyErr != nil {
 		log.Fatal(bodyErr)
@@ -29,18 +28,9 @@ func SendMessage(msg SQSMessage) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("MessageId: %v, sended!", res.MessageId)
+	log.Printf("Message: %v sended!\n", *res.MessageId)
 }
 
 func SendBatchMessage(msgs []SQSBatchMessage) {
 
-}
-
-func getSqsQueue() (SQSQueue, error) {
-	if Queue.client == nil {
-		return Queue, errors.New("sqs Client not setup")
-	} else if Queue.QueueURL == "" {
-		return Queue, errors.New("queue URL cant be empty or null")
-	}
-	return Queue, nil
 }
