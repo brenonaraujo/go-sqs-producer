@@ -1,6 +1,7 @@
 package api
 
 import (
+	"brnnai/producer-sqs/metrics"
 	"log"
 	"net/http"
 	"strconv"
@@ -9,7 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func SetupAPI() {
+func ServerSetup() {
 	router := gin.Default()
 	router.GET("/send/:quantity", sendByQuantity)
 	router.GET("/metrics", prometheusHandler())
@@ -24,6 +25,7 @@ func sendByQuantity(c *gin.Context) {
 	}
 	SendParallel(qtdValue)
 	c.IndentedJSON(http.StatusOK, gin.H{"Message": "Parallel message send started"})
+	metrics.SendRequestTotal.Inc()
 }
 
 func prometheusHandler() gin.HandlerFunc {

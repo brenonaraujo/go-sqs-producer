@@ -11,8 +11,7 @@ import (
 func main() {
 	log.Println("Starting the SQS producer API")
 	awsConfig := GetAWSConfig()
-	queueName := aws.String("rawData-SQS")
-	message.SQSQueueSetup(awsConfig, queueName)
-	api.SetupAPI()
+	message.SQSQueueSetup(awsConfig, aws.String("rawData-SQS"))
+	api.ServerSetup()
 	log.Println("wating for messages to be sended!")
 }

@@ -1,9 +1,8 @@
 package api
 
 import (
-	"brnnai/producer-sqs/domain"
 	"brnnai/producer-sqs/message"
-	"brnnai/producer-sqs/metrics"
+	"brnnai/producer-sqs/types"
 	"encoding/json"
 	"log"
 	"math/rand"
@@ -17,9 +16,9 @@ func randFloat(min, max float64) float64 {
 }
 
 func genRandomUpdateMsg() []byte {
-	user := domain.User{FistName: "Brenon", LastName: "Araujo"}
-	var balances []domain.Balance = make([]domain.Balance, 0)
-	balance := domain.Balance{
+	user := types.User{FistName: "Brenon", LastName: "Araujo"}
+	var balances []types.Balance = make([]types.Balance, 0)
+	balance := types.Balance{
 		Group:           "brrn group",
 		GroupBalance:    randFloat(999999.90, 999999999.98),
 		VariableBalance: randFloat(1000.90, 10000.98),
@@ -28,7 +27,7 @@ func genRandomUpdateMsg() []byte {
 	for i := 0; i < 2; i++ {
 		balances = append(balances, balance)
 	}
-	updateMsg, marshErr := json.Marshal(domain.UpdateMsg{ID: uuid.UUID{}, User: user, Balances: balances})
+	updateMsg, marshErr := json.Marshal(types.UpdateMsg{ID: uuid.UUID{}, User: user, Balances: balances})
 	if marshErr != nil {
 		log.Fatal(marshErr)
 	}
@@ -42,7 +41,6 @@ func SendParallel(qtd int) {
 		go func() {
 			defer wg.Done()
 			message.SendMessage(message.SQSMessage{Body: genRandomUpdateMsg()})
-			metrics.MsgSendedTotal.Inc()
 		}()
 	}
 }

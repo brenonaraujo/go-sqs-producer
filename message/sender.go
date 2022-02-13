@@ -2,7 +2,6 @@ package message
 
 import (
 	"brnnai/producer-sqs/message/sqsApi"
-	"brnnai/producer-sqs/metrics"
 	"context"
 	"log"
 
@@ -12,12 +11,11 @@ import (
 )
 
 func SendMessage(msg SQSMessage) {
-	timer := prometheus.NewTimer(metrics.SendMessageDuration)
+	timer := prometheus.NewTimer(SendMessageDuration)
 	queue, queueErr := GetSqsQueue()
 	if queueErr != nil {
 		log.Fatal(queueErr)
 	}
-	//log.Printf("Start to send message to queue: %v.\n", queue.QueueName)
 	bodyJson, bodyErr := msg.Body.MarshalJSON()
 	if bodyErr != nil {
 		log.Fatal(bodyErr)
@@ -32,8 +30,7 @@ func SendMessage(msg SQSMessage) {
 		log.Fatal(err)
 	}
 	defer timer.ObserveDuration()
-	metrics.MsgSendedPerSec.Inc()
-	// log.Printf("Message: %v sended!\n", *res.MessageId)
+	MsgSendedTotal.Inc()
 }
 
 func SendBatchMessage(msgs []SQSBatchMessage) {
