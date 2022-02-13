@@ -2,6 +2,7 @@ package api
 
 import (
 	"brnnai/producer-sqs/metrics"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,7 +28,8 @@ func sendByQuantity(c *gin.Context) {
 		log.Fatal(err)
 	}
 	SendParallel(qtdValue)
-	c.IndentedJSON(http.StatusOK, gin.H{"Message": "Parallel message send started"})
+	msg := fmt.Sprintf("Sending %v parallel messages to SQS!", qtd)
+	c.IndentedJSON(http.StatusOK, gin.H{"Message": msg})
 	metrics.SendRequestTotal.Inc()
 }
 

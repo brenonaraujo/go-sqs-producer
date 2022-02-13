@@ -44,3 +44,7 @@ func SendParallel(qtd int) {
 		}()
 	}
 }
+
+func SendBatchParallel(qtd int) {
+
+}
