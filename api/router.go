@@ -22,9 +22,8 @@ func sendByQuantity(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	wg := SendParallel(qtdValue)
+	SendParallel(qtdValue)
 	c.IndentedJSON(http.StatusOK, gin.H{"Message": "Parallel message send started"})
-	wg.Done()
 }
 
 func prometheusHandler() gin.HandlerFunc {

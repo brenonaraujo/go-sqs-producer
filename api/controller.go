@@ -35,7 +35,7 @@ func genRandomUpdateMsg() []byte {
 	return updateMsg
 }
 
-func SendParallel(qtd int) sync.WaitGroup {
+func SendParallel(qtd int) {
 	var wg sync.WaitGroup
 	for i := 0; i < qtd; i++ {
 		wg.Add(1)
@@ -45,5 +45,4 @@ func SendParallel(qtd int) sync.WaitGroup {
 			metrics.MsgSendedTotal.Inc()
 		}()
 	}
-	return wg
 }
