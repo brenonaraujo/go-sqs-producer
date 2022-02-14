@@ -4,6 +4,7 @@ import (
 	"brnnai/producer-sqs/message"
 	"brnnai/producer-sqs/utils"
 	"brnnai/producer-sqs/worker"
+	"context"
 	"log"
 	"sync"
 
@@ -21,16 +22,17 @@ func SendParallel(qtd int) {
 	}
 }
 
-func SendBatchParallel(qtd int) {
+func SendBatchParallel(context context.Context, qtd int) {
 	genMessages := make([]message.SQSBatchMessage, 0)
 	for i := 0; i < qtd; i++ {
-		genMessages = append(genMessages, message.SQSBatchMessage{Body: utils.GetRandomUpdateMsg()})
+		id, _ := uuid.NewRandom()
+		genMessages = append(genMessages, message.SQSBatchMessage{ID: id, Body: utils.GetRandomUpdateMsg()})
 	}
 	splits := splitMessages(genMessages)
 	go allocate(splits)
 	done := make(chan bool)
 	go worker.JobResult(done)
-	worker.BatchMessageWorkerPool(100)
+	worker.BatchMessageWorkerPool(context, 100)
 	<-done
 	log.Printf("Send batch messages in parallel was completed!")
 }

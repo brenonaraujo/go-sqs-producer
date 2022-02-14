@@ -40,7 +40,7 @@ func SendBatchMessage(msgs []SQSBatchMessage) {
 	entries := make([]types.SendMessageBatchRequestEntry, 0)
 	for _, msg := range msgs {
 		entries = append(entries, types.SendMessageBatchRequestEntry{
-			Id:          aws.String(msg.id.String()),
+			Id:          aws.String(msg.ID.String()),
 			MessageBody: aws.String((string(msg.Body))),
 		})
 	}

@@ -11,6 +11,6 @@ type SQSMessage struct {
 }
 
 type SQSBatchMessage struct {
-	id   uuid.UUID
+	ID   uuid.UUID
 	Body json.RawMessage
 }
