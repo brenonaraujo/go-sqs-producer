@@ -2,7 +2,6 @@ package worker
 
 import (
 	"brnnai/producer-sqs/message"
-	"context"
 	"log"
 	"sync"
 )
@@ -10,15 +9,14 @@ import (
 var Jobs = make(chan Job, 100)
 var Results = make(chan Result, 100)
 
-func BatchMessageWorkerPool(ctx context.Context, qtd int) {
+func BatchMessageWorkerPool(qtd int) {
 	var wg sync.WaitGroup
 	for i := 0; i < qtd; i++ {
 		wg.Add(1)
 		go batchMessageWorker(&wg)
 	}
 	wg.Wait()
-	close(Jobs)
-	ctx.Done()
+	close(Results)
 }
 
 func batchMessageWorker(wg *sync.WaitGroup) {
