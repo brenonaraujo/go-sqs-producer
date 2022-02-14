@@ -4,6 +4,7 @@ import (
 	"brnnai/producer-sqs/message"
 	"brnnai/producer-sqs/utils"
 	"brnnai/producer-sqs/worker"
+	"log"
 	"sync"
 
 	"github.com/google/uuid"
@@ -31,6 +32,7 @@ func SendBatchParallel(qtd int) {
 	go worker.JobResult(done)
 	worker.BatchMessageWorkerPool(100)
 	<-done
+	log.Printf("Send batch messages in parallel was completed!")
 }
 
 func splitMessages(msgsToSend []message.SQSBatchMessage) [][]message.SQSBatchMessage {
