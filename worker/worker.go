@@ -6,8 +6,13 @@ import (
 	"sync"
 )
 
-var Jobs = make(chan Job, 100)
-var Results = make(chan Result, 100)
+var Jobs = make(chan Job, 500)
+var Results = make(chan Result, 500)
+
+func CreateWorkerChannels() {
+	Jobs = make(chan Job, 500)
+	Results = make(chan Result, 500)
+}
 
 func BatchMessageWorkerPool(qtd int) {
 	var wg sync.WaitGroup

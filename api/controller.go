@@ -22,6 +22,7 @@ func SendParallel(qtd int) {
 }
 
 func SendBatchParallel(qtd int) {
+	defer worker.CreateWorkerChannels()
 	genMessages := make([]message.SQSBatchMessage, 0)
 	for i := 0; i < qtd; i++ {
 		id, _ := uuid.NewRandom()
@@ -34,8 +35,6 @@ func SendBatchParallel(qtd int) {
 	worker.BatchMessageWorkerPool(100)
 	<-done
 	log.Printf("Send batch messages in parallel was completed!")
-	worker.Results = make(chan worker.Result, 100)
-	worker.Jobs = make(chan worker.Job, 100)
 }
 
 func splitMessages(msgsToSend []message.SQSBatchMessage) [][]message.SQSBatchMessage {
