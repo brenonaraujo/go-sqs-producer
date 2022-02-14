@@ -1,6 +1,6 @@
 # go-sqs-producer
 
-A simple app to produce messages to sqs by using aws sdk v2 package for Golang.
+A simple app to produce messages to SQS by using aws sdk v2 package for Golang in performatic meaning.
 
 ## How to run
  
@@ -20,6 +20,11 @@ A simple app to produce messages to sqs by using aws sdk v2 package for Golang.
  The server metrics will be at the port 2112, to scrap metrics can simply open the url:
 
  `http://localhost:8080/metrics`
+
+
+ ## Performance considerations
+
+ | As I told early, /send/batch route implementes a performatic way to send milions of messages to SQS by using goroutines, channels and an worker pool strategy to send messages in batch and parallel, with this we can produce 1000000 in less than 180 seconds, thats means we can produce 5500 messages per second with that simple implementation.
 
  working in progress...
 
