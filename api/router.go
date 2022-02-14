@@ -1,7 +1,6 @@
 package api
 
 import (
-	"brnnai/producer-sqs/metrics"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,7 +19,7 @@ func ServerSetup() {
 }
 
 func sendByQuantity(c *gin.Context) {
-	timer := prometheus.NewTimer(metrics.SendRequestDuration)
+	timer := prometheus.NewTimer(SendRequestDuration)
 	defer timer.ObserveDuration()
 	qtd := c.Param("quantity")
 	qtdValue, err := strconv.Atoi(qtd)
@@ -30,7 +29,7 @@ func sendByQuantity(c *gin.Context) {
 	SendParallel(qtdValue)
 	msg := fmt.Sprintf("Sending %v parallel messages to SQS!", qtd)
 	c.IndentedJSON(http.StatusOK, gin.H{"Message": msg})
-	metrics.SendRequestTotal.Inc()
+	SendRequestTotal.Inc()
 }
 
 func prometheusHandler() gin.HandlerFunc {

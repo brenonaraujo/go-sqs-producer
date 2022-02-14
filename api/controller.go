@@ -2,37 +2,12 @@ package api
 
 import (
 	"brnnai/producer-sqs/message"
-	"brnnai/producer-sqs/types"
-	"encoding/json"
-	"log"
-	"math/rand"
+	"brnnai/producer-sqs/utils"
+	"brnnai/producer-sqs/worker"
 	"sync"
 
 	"github.com/google/uuid"
 )
-
-func randFloat(min, max float64) float64 {
-	return min + rand.Float64()*(max-min)
-}
-
-func genRandomUpdateMsg() []byte {
-	user := types.User{FistName: "Brenon", LastName: "Araujo"}
-	var balances []types.Balance = make([]types.Balance, 0)
-	balance := types.Balance{
-		Group:           "brrn group",
-		GroupBalance:    randFloat(999999.90, 999999999.98),
-		VariableBalance: randFloat(1000.90, 10000.98),
-		ActualBalance:   randFloat(1000.90, 10000.98),
-	}
-	for i := 0; i < 2; i++ {
-		balances = append(balances, balance)
-	}
-	updateMsg, marshErr := json.Marshal(types.UpdateMsg{ID: uuid.UUID{}, User: user, Balances: balances})
-	if marshErr != nil {
-		log.Fatal(marshErr)
-	}
-	return updateMsg
-}
 
 func SendParallel(qtd int) {
 	var wg sync.WaitGroup
@@ -40,11 +15,43 @@ func SendParallel(qtd int) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			message.SendMessage(message.SQSMessage{Body: genRandomUpdateMsg()})
+			message.SendMessage(message.SQSMessage{Body: utils.GetRandomUpdateMsg()})
 		}()
 	}
 }
 
 func SendBatchParallel(qtd int) {
+	genMessages := make([]message.SQSBatchMessage, 0)
+	for i := 0; i < qtd; i++ {
+		genMessages = append(genMessages, message.SQSBatchMessage{Body: utils.GetRandomUpdateMsg()})
+	}
+	splits := splitMessages(genMessages)
+	go allocate(splits)
+	done := make(chan bool)
+	go worker.JobResult(done)
+	worker.BatchMessageWorkerPool(100)
+	<-done
+}
 
+func splitMessages(msgsToSend []message.SQSBatchMessage) [][]message.SQSBatchMessage {
+	splits := make([][]message.SQSBatchMessage, 0)
+	size := 10
+	var end int
+	for i := 0; i <= len(msgsToSend); i += size {
+		end += size
+		if end > len(msgsToSend) {
+			end = len(msgsToSend)
+		}
+		splits = append(splits, msgsToSend[i:end])
+	}
+	return splits
+}
+
+func allocate(splits [][]message.SQSBatchMessage) {
+	for _, split := range splits {
+		id, _ := uuid.NewRandom()
+		job := worker.Job{Id: id, Msgs: split}
+		worker.Jobs <- job
+	}
+	close(worker.Jobs)
 }
