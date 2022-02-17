@@ -24,3 +24,8 @@ var SendBatchRequestDuration = promauto.NewSummary(prometheus.SummaryOpts{
 	Name: "sqs_producer_api_send_batch_request_duration",
 	Help: "Send messages in batch request duration",
 })
+
+var GenMessagesRequestDuration = promauto.NewSummary(prometheus.SummaryOpts{
+	Name: "sqs_producer_api_gen_messages_request_duration",
+	Help: "Generate messages request duration",
+})

@@ -13,7 +13,7 @@ func randFloat(min, max float64) float64 {
 	return min + rand.Float64()*(max-min)
 }
 
-func GetRandomUpdateMsg() []byte {
+func GetRandomData() []byte {
 	user := types.User{FistName: "Brenon", LastName: "Araujo"}
 	var balances []types.Balance = make([]types.Balance, 0)
 	balance := types.Balance{

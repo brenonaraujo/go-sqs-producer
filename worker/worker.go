@@ -6,30 +6,19 @@ import (
 	"sync"
 )
 
-var Jobs = make(chan Job, 500)
-var Results = make(chan Result, 500)
-
-func CreateWorkerChannels() {
-	Jobs = make(chan Job, 500)
-	Results = make(chan Result, 500)
-}
-
-func BatchMessageWorkerPool(qtd int) {
+func SendMessageWorkerPool(qtd int) {
 	var wg sync.WaitGroup
 	for i := 0; i < qtd; i++ {
 		wg.Add(1)
-		go batchMessageWorker(&wg)
+		go sendMessageWorker(&wg)
 	}
 	wg.Wait()
 	close(Results)
 }
 
-func batchMessageWorker(wg *sync.WaitGroup) {
+func sendMessageWorker(wg *sync.WaitGroup) {
 	for job := range Jobs {
-		if len(job.Msgs) <= 0 {
-			continue
-		}
-		message.SendBatchMessage(job.Msgs)
+		message.SendMessage(job.Msg)
 		output := Result{job, true}
 		Results <- output
 	}

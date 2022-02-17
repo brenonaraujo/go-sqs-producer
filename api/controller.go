@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 func SendParallel(qtd int) {
@@ -21,25 +22,40 @@ func SendParallel(qtd int) {
 	}
 }
 
+func SendSplitsParallel(qtd int) {
+	defer worker.CreateWorkerChannels()
+	timer := prometheus.NewTimer(GenMessagesRequestDuration)
+	genMessages := make([]message.SQSBatchMessage, 0)
+
+}
+
 func SendBatchParallel(qtd int) {
 	defer worker.CreateWorkerChannels()
-	genMessages := make([]message.SQSBatchMessage, 0)
+	timer := prometheus.NewTimer(GenMessagesRequestDuration)
+	messages := make([]message.SQSBatchMessage, 0)
 	for i := 0; i < qtd; i++ {
 		id, _ := uuid.NewRandom()
-		genMessages = append(genMessages, message.SQSBatchMessage{ID: id, Body: utils.GetRandomUpdateMsg()})
+		messages = append(messages, message.SQSBatchMessage{ID: id, Body: utils.GetRandomUpdateMsg()})
 	}
-	splits := splitMessages(genMessages)
+	timer.ObserveDuration()
+	splits := splitMessages(messages, 10)
 	go allocate(splits)
 	done := make(chan bool)
 	go worker.JobResult(done)
-	worker.BatchMessageWorkerPool(100)
+	worker.BatchMessageWorkerPool(500)
 	<-done
 	log.Printf("Send batch messages in parallel was completed!")
 }
 
-func splitMessages(msgsToSend []message.SQSBatchMessage) [][]message.SQSBatchMessage {
+func messageGerator() [] {
+	for i := 0; i < qtd; i++ {
+		id, _ := uuid.NewRandom()
+		messages = append(messages, message.SQSBatchMessage{ID: id, Body: utils.GetRandomUpdateMsg()})
+	}
+}
+
+func splitMessages(msgsToSend []message.SQSBatchMessage, size int) [][]message.SQSBatchMessage {
 	splits := make([][]message.SQSBatchMessage, 0)
-	size := 10
 	var end int
 	for i := 0; i <= len(msgsToSend); i += size {
 		end += size

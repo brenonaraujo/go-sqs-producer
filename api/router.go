@@ -14,7 +14,7 @@ import (
 func ServerSetup() {
 	router := gin.Default()
 	router.GET("/send/:quantity", sendByQuantity)
-	router.GET("/send/batch/:quantity", sendBatchByQuantity)
+	router.GET("/send/packages/:quantity", sendBatchByQuantity)
 	router.GET("/metrics", prometheusHandler())
 	router.Run("localhost:8080")
 }

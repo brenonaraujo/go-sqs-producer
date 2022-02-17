@@ -10,7 +10,9 @@ import (
 type Job struct {
 	Id   uuid.UUID
 	Msgs []message.SQSBatchMessage
+	Msg  message.SQSMessage
 }
+
 type Result struct {
 	Job        Job
 	MsgsResult bool

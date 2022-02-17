@@ -16,12 +16,12 @@ var MsgBatchSendedTotal = promauto.NewCounter(prometheus.CounterOpts{
 })
 
 var SendMessageDuration = promauto.NewSummary(prometheus.SummaryOpts{
-	Name: "sqs_producer_send_message_request_duration",
+	Name: "sqs_producer_send_message_duration",
 	Help: "Send messages request duration",
 })
 
 var SendBatchMessageDuration = promauto.NewSummary(prometheus.SummaryOpts{
-	Name: "sqs_producer_send_batch_message_request_duration",
+	Name: "sqs_producer_send_batch_message_duration",
 	Help: "Send messages request duration",
 })
 
