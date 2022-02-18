@@ -8,6 +8,15 @@ A simple app to produce messages to SQS by using aws sdk v2 package for Golang i
 
  Just run the command  `go run .` at the root directory
 
+ ### From docker
+
+Build the image
+ `docker build . producer-sqs:snapshot`
+
+Execute a docker run
+`
+docker run -i -d -t -p 8080:9292 -e AWS_ACCESS_KEY_ID=access_key -e AWS_SECRET_ACCESS_KEY=access_secret -e AWS_DEFAULT_REGION=region producer-sqs:snapshot`
+
  ## Sending data to SQS
 
  The service were implemented by using gin as http Router to the api.
