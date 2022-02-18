@@ -34,7 +34,7 @@ func SendPacketsParallel(qtd int) {
 	go allocateMessageJobs(messages)
 	done := make(chan bool)
 	go worker.JobResult(done)
-	worker.SendMessageWorkerPool(200)
+	worker.SendMessageWorkerPool(100)
 	<-done
 	log.Printf("Send parallel packets as messages completed!!")
 }
@@ -52,7 +52,7 @@ func SendBatchParallel(qtd int) {
 	go allocateBatchJobs(splits)
 	done := make(chan bool)
 	go worker.JobResult(done)
-	worker.SendBatchMessageWorkerPool(200)
+	worker.SendBatchMessageWorkerPool(100)
 	<-done
 	log.Printf("Send batch messages in parallel completed!")
 }
