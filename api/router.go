@@ -17,7 +17,7 @@ func ServerSetup() {
 	router.GET("/send/batch/:quantity", sendBatchByQuantity)
 	router.GET("/send/packet/:quantity", sendPacketsByQuantity)
 	router.GET("/metrics", prometheusHandler())
-	router.Run()
+	router.Run(":9292")
 }
 
 func sendByQuantity(c *gin.Context) {
