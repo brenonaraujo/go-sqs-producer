@@ -17,45 +17,48 @@ func SendParallel(qtd int) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			message.SendMessage(message.SQSMessage{Body: utils.GetRandomUpdateMsg()})
+			message.SendMessage(message.SQSMessage{Body: utils.GetRandomData(500)})
 		}()
 	}
 }
 
-func SendSplitsParallel(qtd int) {
+func SendPacketsParallel(qtd int) {
 	defer worker.CreateWorkerChannels()
 	timer := prometheus.NewTimer(GenMessagesRequestDuration)
-	genMessages := make([]message.SQSBatchMessage, 0)
-
+	timer.ObserveDuration()
+	messages := make([]message.SQSMessage, 0)
+	for i := 0; i < qtd; i++ {
+		messages = append(messages, message.SQSMessage{Body: utils.GetRandomData(690)})
+	}
+	timer.ObserveDuration()
+	go allocateMessageJobs(messages)
+	done := make(chan bool)
+	go worker.JobResult(done)
+	worker.SendMessageWorkerPool(200)
+	<-done
+	log.Printf("Send parallel packets as messages completed!!")
 }
 
 func SendBatchParallel(qtd int) {
 	defer worker.CreateWorkerChannels()
 	timer := prometheus.NewTimer(GenMessagesRequestDuration)
-	messages := make([]message.SQSBatchMessage, 0)
+	messages := make([]message.SQSMessage, 0)
 	for i := 0; i < qtd; i++ {
 		id, _ := uuid.NewRandom()
-		messages = append(messages, message.SQSBatchMessage{ID: id, Body: utils.GetRandomUpdateMsg()})
+		messages = append(messages, message.SQSMessage{ID: id, Body: utils.GetRandomData(2)})
 	}
 	timer.ObserveDuration()
 	splits := splitMessages(messages, 10)
-	go allocate(splits)
+	go allocateBatchJobs(splits)
 	done := make(chan bool)
 	go worker.JobResult(done)
-	worker.BatchMessageWorkerPool(500)
+	worker.SendBatchMessageWorkerPool(500)
 	<-done
-	log.Printf("Send batch messages in parallel was completed!")
+	log.Printf("Send batch messages in parallel completed!")
 }
 
-func messageGerator() [] {
-	for i := 0; i < qtd; i++ {
-		id, _ := uuid.NewRandom()
-		messages = append(messages, message.SQSBatchMessage{ID: id, Body: utils.GetRandomUpdateMsg()})
-	}
-}
-
-func splitMessages(msgsToSend []message.SQSBatchMessage, size int) [][]message.SQSBatchMessage {
-	splits := make([][]message.SQSBatchMessage, 0)
+func splitMessages(msgsToSend []message.SQSMessage, size int) [][]message.SQSMessage {
+	splits := make([][]message.SQSMessage, 0)
 	var end int
 	for i := 0; i <= len(msgsToSend); i += size {
 		end += size
@@ -67,10 +70,19 @@ func splitMessages(msgsToSend []message.SQSBatchMessage, size int) [][]message.S
 	return splits
 }
 
-func allocate(splits [][]message.SQSBatchMessage) {
+func allocateBatchJobs(splits [][]message.SQSMessage) {
 	for _, split := range splits {
 		id, _ := uuid.NewRandom()
 		job := worker.Job{Id: id, Msgs: split}
+		worker.Jobs <- job
+	}
+	close(worker.Jobs)
+}
+
+func allocateMessageJobs(messages []message.SQSMessage) {
+	for _, message := range messages {
+		id, _ := uuid.NewRandom()
+		job := worker.Job{Id: id, Msg: message}
 		worker.Jobs <- job
 	}
 	close(worker.Jobs)

@@ -1,6 +1,9 @@
 package worker
 
-import "flag"
+import (
+	"flag"
+	"log"
+)
 
 var channelCapacity int = *flag.Int("chMaxCap", 500, "Max nunber of parallalel messages at channels job and result")
 
@@ -10,4 +13,11 @@ var Results = make(chan Result, channelCapacity)
 func CreateWorkerChannels() {
 	Jobs = make(chan Job, channelCapacity)
 	Results = make(chan Result, channelCapacity)
+}
+
+func JobResult(done chan bool) {
+	for result := range Results {
+		log.Printf("Job id %v, finished", result.Job.Id)
+	}
+	done <- true
 }

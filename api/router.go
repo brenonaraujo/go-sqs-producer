@@ -14,7 +14,8 @@ import (
 func ServerSetup() {
 	router := gin.Default()
 	router.GET("/send/:quantity", sendByQuantity)
-	router.GET("/send/packages/:quantity", sendBatchByQuantity)
+	router.GET("/send/batch/:quantity", sendBatchByQuantity)
+	router.GET("/send/packet/:quantity", sendPacketsByQuantity)
 	router.GET("/metrics", prometheusHandler())
 	router.Run("localhost:8080")
 }
@@ -42,6 +43,18 @@ func sendBatchByQuantity(c *gin.Context) {
 		log.Fatal(err)
 	}
 	SendBatchParallel(qtdValue)
+	msg := fmt.Sprintf("Sending %v parallel batch messages to SQS!", qtd)
+	c.IndentedJSON(http.StatusOK, gin.H{"Message": msg})
+	SendRequestTotal.Inc()
+}
+
+func sendPacketsByQuantity(c *gin.Context) {
+	qtd := c.Param("quantity")
+	qtdValue, err := strconv.Atoi(qtd)
+	if err != nil {
+		log.Fatal(err)
+	}
+	SendPacketsParallel(qtdValue)
 	msg := fmt.Sprintf("Sending %v parallel batch messages to SQS!", qtd)
 	c.IndentedJSON(http.StatusOK, gin.H{"Message": msg})
 	SendRequestTotal.Inc()

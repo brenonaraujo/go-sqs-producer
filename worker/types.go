@@ -9,7 +9,7 @@ import (
 
 type Job struct {
 	Id   uuid.UUID
-	Msgs []message.SQSBatchMessage
+	Msgs []message.SQSMessage
 	Msg  message.SQSMessage
 }
 

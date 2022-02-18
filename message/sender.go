@@ -30,7 +30,7 @@ func SendMessage(msg SQSMessage) {
 	MsgSendedTotal.Inc()
 }
 
-func SendBatchMessage(msgs []SQSBatchMessage) {
+func SendBatchMessage(msgs []SQSMessage) {
 	timer := prometheus.NewTimer(SendBatchMessageDuration)
 	defer timer.ObserveDuration()
 	queue, queueErr := GetSqsQueue()
