@@ -4,9 +4,10 @@ ARG  BUILDER_IMAGE=golang:alpine
 ############################
 FROM ${BUILDER_IMAGE} as builder
 
-# Install git .
-# Git is required for fetching the dependecies.
-RUN apk update && apk add --no-cache git tzdata 
+# Install git + SSL ca certificates.
+# Git is required for fetching the dependencies.
+# Ca-certificates is required to call HTTPS endpoints.
+RUN apk update && apk add --no-cache git ca-certificates tzdata && update-ca-certificates
 
 # Create appuser.
 ENV USER=appuser
@@ -41,6 +42,8 @@ RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/producer-sqs
 FROM scratch
 
 # Import from builder.
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 
@@ -49,6 +52,9 @@ COPY --from=builder /go/bin/producer-sqs /go/bin/producer-sqs
 
 # Use an unprivileged user.
 USER appuser:appuser
+
+# Port on which the service will be exposed.
+EXPOSE 9292
 
 # Run the hello binary.
 ENTRYPOINT ["/go/bin/producer-sqs"]
