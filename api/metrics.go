@@ -5,6 +5,11 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
+var SendPacketDuration = promauto.NewSummary(prometheus.SummaryOpts{
+	Name: "sqs_producer_api_send_packet_duration",
+	Help: "Send packet messages request duration",
+})
+
 var SendRequestTotal = promauto.NewCounter(prometheus.CounterOpts{
 	Name: "sqs_producer_api_send_request_total",
 	Help: "The total number of requests to  send messages route",

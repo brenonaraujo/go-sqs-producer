@@ -49,15 +49,17 @@ func sendBatchByQuantity(c *gin.Context) {
 }
 
 func sendPacketsByQuantity(c *gin.Context) {
+	timer := prometheus.NewTimer(SendPacketDuration)
 	qtd := c.Param("quantity")
 	qtdValue, err := strconv.Atoi(qtd)
 	if err != nil {
 		log.Fatal(err)
 	}
-	SendPacketsParallel(qtdValue)
+	go SendPacketsParallel(qtdValue)
 	msg := fmt.Sprintf("Sending %v parallel batch messages to SQS!", qtd)
 	c.IndentedJSON(http.StatusOK, gin.H{"Message": msg})
 	SendRequestTotal.Inc()
+	timer.ObserveDuration()
 }
 
 func prometheusHandler() gin.HandlerFunc {

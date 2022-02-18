@@ -45,14 +45,14 @@ func SendBatchParallel(qtd int) {
 	messages := make([]message.SQSMessage, 0)
 	for i := 0; i < qtd; i++ {
 		id, _ := uuid.NewRandom()
-		messages = append(messages, message.SQSMessage{ID: id, Body: utils.GetRandomData(2)})
+		messages = append(messages, message.SQSMessage{ID: id, Body: utils.GetRandomData(10)})
 	}
 	timer.ObserveDuration()
 	splits := splitMessages(messages, 10)
 	go allocateBatchJobs(splits)
 	done := make(chan bool)
 	go worker.JobResult(done)
-	worker.SendBatchMessageWorkerPool(500)
+	worker.SendBatchMessageWorkerPool(200)
 	<-done
 	log.Printf("Send batch messages in parallel completed!")
 }
