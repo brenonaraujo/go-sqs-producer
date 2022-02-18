@@ -54,7 +54,7 @@ COPY --from=builder /go/bin/producer-sqs /go/bin/producer-sqs
 USER appuser:appuser
 
 # Port on which the service will be exposed.
-EXPOSE 9292
+EXPOSE 8080
 
 # Run the hello binary.
 ENTRYPOINT ["/go/bin/producer-sqs"]
