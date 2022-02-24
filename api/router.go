@@ -55,7 +55,7 @@ func sendPacketsByQuantity(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	go SendPacketsParallel(qtdValue)
+	SendPacketsParallel(qtdValue)
 	msg := fmt.Sprintf("Sending %v parallel batch messages to SQS!", qtd)
 	c.IndentedJSON(http.StatusOK, gin.H{"Message": msg})
 	SendRequestTotal.Inc()
