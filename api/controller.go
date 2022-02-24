@@ -22,6 +22,8 @@ func SendParallel(qtd int) {
 	}
 }
 
+// without compression 210 is packets will be < 64kb
+// 60 workers was the number of best performance with that package size
 func SendPacketsParallel(qtd int) {
 	defer worker.CreateWorkerChannels()
 	timer := prometheus.NewTimer(GenMessagesRequestDuration)
@@ -34,7 +36,7 @@ func SendPacketsParallel(qtd int) {
 	go allocateMessageJobs(messages)
 	done := make(chan bool)
 	go worker.JobResult(done)
-	worker.SendMessageWorkerPool(100)
+	worker.SendMessageWorkerPool(60)
 	<-done
 	log.Printf("Send parallel packets as messages completed!!")
 }

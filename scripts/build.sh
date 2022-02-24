@@ -1,1 +1,1 @@
-docker build . --tag sqs-producer:snapshot
+cd .. | docker build . --tag sqs-producer:snapshot

@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-var channelCapacity int = *flag.Int("chMaxCap", 1000, "Max nunber of parallalel messages at channels job and result")
+var channelCapacity int = *flag.Int("chMaxCap", 500, "Max nunber of parallalel messages at channels job and result")
 
 var Jobs = make(chan Job, channelCapacity)
 var Results = make(chan Result, channelCapacity)
