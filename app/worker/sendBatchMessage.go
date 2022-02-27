@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"brnnai/producer-sqs/message"
+	"brnnai/producer-sqs/app/message"
 	"sync"
 )
 

@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"brnnai/producer-sqs/types"
+	"brnnai/producer-sqs/app/types"
 	"encoding/json"
 	"log"
 	"math/rand"
