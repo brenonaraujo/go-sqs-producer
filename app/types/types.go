@@ -7,6 +7,7 @@ type User struct {
 	LastName string
 	Email    string
 }
+
 type Balance struct {
 	ActualBalance   float64
 	ActualBalance1  float64
@@ -18,7 +19,9 @@ type Balance struct {
 	Group           string
 	GroupBalance    float64
 	DificultyValue  float64
+	User            User
 }
+
 type UpdateMsg struct {
 	ID       uuid.UUID
 	User     User

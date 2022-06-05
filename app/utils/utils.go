@@ -14,7 +14,7 @@ func randFloat(min, max float64) float64 {
 }
 
 func GetRandomData(size int) []byte {
-	user := types.User{FistName: "Brenon", LastName: "Araujo"}
+	user := types.User{FistName: "Brenon", LastName: "Araujo", Email: "brenonaraujo@gmail.com"}
 	var balances []types.Balance = make([]types.Balance, 0)
 	for i := 0; i < size; i++ {
 		balance := types.Balance{

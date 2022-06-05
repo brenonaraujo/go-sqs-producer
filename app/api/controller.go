@@ -17,7 +17,7 @@ func SendParallel(qtd int) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			message.SendMessage(message.SQSMessage{Body: utils.GetRandomData(500)})
+			message.SendMessage(message.SQSMessage{Body: utils.GetRandomData(50)})
 		}()
 	}
 }
@@ -30,7 +30,7 @@ func SendPacketsParallel(qtd int) {
 	timer.ObserveDuration()
 	messages := make([]message.SQSMessage, 0)
 	for i := 0; i < qtd; i++ {
-		messages = append(messages, message.SQSMessage{Body: utils.GetRandomData(210)})
+		messages = append(messages, message.SQSMessage{Body: utils.GetRandomData(100)})
 	}
 	timer.ObserveDuration()
 	go allocateMessageJobs(messages)
