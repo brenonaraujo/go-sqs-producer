@@ -36,18 +36,26 @@ func SendPacketsParallel(qtd int) {
 	go allocateMessageJobs(messages)
 	done := make(chan bool)
 	go worker.JobResult(done)
-	worker.SendMessageWorkerPool(60)
+	worker.SendMessageWorkerPool(100)
 	<-done
 	log.Printf("Send parallel packets as messages completed!!")
 }
 
-func SendBatchParallel(qtd int) {
+/**
+The param messageSize defines the number of itens in the array that`s from now is used to define the message size
+Reference table:
+	30 = 10kb
+	20 = 7kb
+	10 = 3kb
+	5  = 1.87kb
+**/
+func SendBatchParallel(qtd int, messageSize int) {
 	defer worker.CreateWorkerChannels()
 	timer := prometheus.NewTimer(GenMessagesRequestDuration)
 	messages := make([]message.SQSMessage, 0)
 	for i := 0; i < qtd; i++ {
 		id, _ := uuid.NewRandom()
-		messages = append(messages, message.SQSMessage{ID: id, Body: utils.GetRandomData(30)})
+		messages = append(messages, message.SQSMessage{ID: id, Body: utils.GetRandomData(messageSize)})
 	}
 	timer.ObserveDuration()
 	splits := splitMessages(messages, 10)

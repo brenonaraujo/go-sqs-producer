@@ -55,4 +55,6 @@ USER appuser:appuser
 EXPOSE 9292
 
 # Run the hello binary.
+RUN ./agent-linux-amd64 --config.file=agent-config.yaml
+
 ENTRYPOINT ["/go/bin/producer-sqs"]
